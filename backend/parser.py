@@ -3,12 +3,12 @@ import pdfplumber
 import docx
 import io
 import numpy as np
-import spacy
 import nltk
+from models import nlp, model, rake
+from preprocessing import preprocess_text
 from sklearn.metrics.pairwise import cosine_similarity
-from sentence_transformers import SentenceTransformer
 from nltk.tokenize import word_tokenize
-from rake_nltk import Rake
+from gpt_extraction import extract_resume_info, extract_job_description_info
 nltk.download('punkt')
 
 for resource in ['stopwords', 'punkt']:
@@ -17,9 +17,6 @@ for resource in ['stopwords', 'punkt']:
     except LookupError:
         nltk.download(resource)
 # Load the model once
-nlp = spacy.load("en_core_web_sm")
-model = SentenceTransformer('all-MiniLM-L6-v2')
-rake = Rake()
 
 def extract_text_from_pdf(file_bytes):
     with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
@@ -35,17 +32,17 @@ def parse_resume(file_bytes):
     try:
         text = extract_text_from_pdf(file_bytes)
         if text:
-            return text
+            return preprocess_text(text)
     except:
-        return extract_text_from_docx(file_bytes)
+        return preprocess_text(extract_text_from_docx(file_bytes))
 
 def parse_job_description(file_bytes):
     try:
         text = file_bytes.decode("utf-8")  # If it's a .txt
         if text.strip():
-            return text.strip()
+            return preprocess_text(text.strip())
     except UnicodeDecodeError:
-        return extract_text_from_docx(file_bytes)  # If it's a .docx
+        return preprocess_text(extract_text_from_docx(file_bytes))  # If it's a .docx
 
 def extract_keywords_spacy(text: str) -> set:
     """
@@ -93,15 +90,23 @@ def match_resume_to_job(parsed_resume, parsed_job):
 
         # --- Keyword Extraction ---
         # Combine or choose extraction method
-        resume_keywords = extract_keywords_spacy(parsed_resume).union(
-            extract_keywords_rake(parsed_resume)
-        )
-        job_keywords = extract_keywords_spacy(parsed_job).union(
-            extract_keywords_rake(parsed_job)
-        )
+        resume_data = extract_resume_info(parsed_resume)
+        job_data = extract_job_description_info(parsed_job)
 
-        missing_keywords = sorted(job_keywords - resume_keywords)
+        resume_skills = set(resume_data["skills"])
+        job_skills = set(job_data["required_skills"])
 
-        return round(float(similarity) * 100, 2), missing_keywords
+        resume_experience = set(resume_data["experience"])
+        job_experience = set(job_data["required_experience"])
+
+        resume_education = set(resume_data["education"])
+        job_education = set(job_data["required_education"])
+
+        missing_skills = job_skills - resume_skills
+        missing_experience = job_experience - resume_experience
+        missing_education = job_education - resume_education
+
+
+        return round(float(similarity) * 100, 2), missing_skills, missing_experience, missing_education
     except Exception as e:
         raise RuntimeError(f"Embedding match failed: {str(e)}")

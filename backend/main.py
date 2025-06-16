@@ -16,11 +16,13 @@ async def analyze_resume(resume: UploadFile = File(...), job_desc: UploadFile = 
     parsed_resume = parse_resume(resume_text)
     parsed_job = parse_job_description(job_text)
 
-    match_score, missing_keywords = match_resume_to_job(parsed_resume, parsed_job)
+    match_score, missing_skills, missing_experience, missing_education= match_resume_to_job(parsed_resume, parsed_job)
 
     return {
         "match_score": match_score,
-        "missing_keywords": missing_keywords
+        "missing_skills": missing_skills,
+        "missing_experience": missing_experience,
+        "missing_education": missing_education
     }
   except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

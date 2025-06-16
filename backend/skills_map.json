@@ -1,0 +1,19 @@
+{
+    "ml": "machine learning",
+    "nlp": "natural language processing",
+    "ai": "artificial intelligence",
+    "cv": "computer vision",
+    "ds": "data science",
+    "dl": "deep learning",
+    "py": "python",
+    "js": "javascript",
+    "html5": "html",
+    "css3": "css",
+    "postgres": "postgresql",
+    "sklearn": "scikit-learn",
+    "gcp": "google cloud platform",
+    "aws": "amazon web services",
+    "rest api": "rest api",
+    "ppt": "microsoft powerpoint",
+    "ms office": "microsoft office"
+}

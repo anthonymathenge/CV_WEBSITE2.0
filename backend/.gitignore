@@ -16,3 +16,6 @@ __pycache__/
 
 # Ignore environment config
 .env
+
+#Ignore OpenAI key
+OpenAi_key.txt
