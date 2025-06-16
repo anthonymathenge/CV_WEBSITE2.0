@@ -5,7 +5,7 @@ import os
 import json
 
 # Load OpenAI key from env
-openai.api_key = os.getenv("OPENAI_API_KEY")
+#openai.api_key = 
 MODEL = "gpt-4o"  # Or "gpt-4-turbo" if you don't have access to GPT-4o
 
 # Resume extractor

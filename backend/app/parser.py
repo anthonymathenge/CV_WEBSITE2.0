@@ -4,12 +4,16 @@ import docx
 import io
 import numpy as np
 import nltk
-from models import nlp, model, rake
-from preprocessing import preprocess_text
+from app.config.models import nlp, model, rake
+from parsing_helpers.preprocessing import preprocess_text
+from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.tokenize import word_tokenize
-from gpt_extraction import extract_resume_info, extract_job_description_info
+from parsing_helpers.gpt_extraction import extract_resume_info, extract_job_description_info
+from parsing_helpers.spacy_extraction import spacy_extract_resume,skill_matcher
 nltk.download('punkt')
+
+model = SentenceTransformer('all-MiniLM-L6-v2') 
 
 for resource in ['stopwords', 'punkt']:
     try:
@@ -77,6 +81,24 @@ def extract_keywords_rake(text: str, max_keywords=20) -> list:
     return [phrase.lower() for phrase in ranked_phrases]
 
 
+def semantic_skill_matcher(job_skills, resume_skills, threshold=0.75):
+    matched_skills = set()
+
+    for job_skill in job_skills:
+        job_embedding = model.encode(job_skill)
+
+        for resume_skill in resume_skills:
+            resume_embedding = model.encode(resume_skill)
+            score = cosine_similarity([job_embedding], [resume_embedding])[0][0]
+
+            if score >= threshold:
+                matched_skills.add(job_skill)
+                break  # once matched, stop comparing this job skill
+
+    missing_skills = job_skills - matched_skills
+    return matched_skills, missing_skills
+
+
 def get_embedding(text):
     if len(text) > 32000:
         text = text[:32000]
@@ -102,11 +124,17 @@ def match_resume_to_job(parsed_resume, parsed_job):
         resume_education = set(resume_data["education"])
         job_education = set(job_data["required_education"])
 
-        missing_skills = job_skills - resume_skills
+        spacy_result = spacy_extract_resume(parsed_resume)
+        spacy_skills = skill_matcher(parsed_job)
+
+        final_resume_skills = resume_skills.union(spacy_skills)
+
+
+        matched_skills, missing_skills = semantic_skill_matcher(job_skills, final_resume_skills)
         missing_experience = job_experience - resume_experience
         missing_education = job_education - resume_education
 
 
-        return round(float(similarity) * 100, 2), missing_skills, missing_experience, missing_education
+        return round(float(similarity) * 100, 2), missing_skills, missing_experience, missing_education, matched_skills
     except Exception as e:
         raise RuntimeError(f"Embedding match failed: {str(e)}")

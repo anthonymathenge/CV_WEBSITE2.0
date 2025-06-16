@@ -2,7 +2,7 @@
 import json
 import re
 import nltk
-from models import nlp, model, rake
+from app.config.models import nlp, model, rake
 
 
 # Download stopwords if not already

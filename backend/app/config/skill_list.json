@@ -1,0 +1,68 @@
+[
+    "Python", "Java", "Machine Learning", "NLP", "Django", "SQL",
+    "C++", "C#", "Javascript", "TypeScript", "PHP", "R", "MATLAB",
+    "Go", "Rust", "Swift", "Kotlin",
+
+    "Frameworks", "React", "Angular", "Vue.js", ".NET",
+    "Spring", "Flask", "FastAPI",
+
+    "Web Development", "API Development", "REST", "GraphQL",
+    "Microservices", "Docker", "Kubernetes",
+
+    "Cloud Platforms", "AWS", "GCP", "Microsoft Azure",
+    "Scalable Applications", "Serverless Computing",
+
+    "Design Patterns", "SOLID Principles", "Clean Code",
+    "Test-Driven Development (TDD)", "Behavior-Driven Development (BDD)",
+
+    "Functional and Regression Testing", "Integration Tests",
+    "Mocking", "Jest", "PyTest", "JUnit",
+
+    "Version Control", "Git", "Github", "GitLab",
+    "Continuous Integration (CI)", "Continuous Deployment (CD)", "Jenkins",
+
+    "Relational Databases", "Postgres", "MySQL", "Oracle",
+    "Non-relational Databases", "Redis", "MongoDB", "Cassandra",
+
+    "Networking", "TCP/IP", "UDP", "WebSockets",
+    "Security", "Encryption", "SSL/TLS",
+
+    "Linux OS", "Command Line", "Bash scripting",
+
+    "Soft Skills", "Teamwork", "Collaboration", "Initiative",
+    "Adaptability", "Conflict Resolution", "Time Management",
+    "Problem-solving", "Critical Thinking", "Attention to Detail",
+    "Work Ethic", "Communication", "Presentation Skills",
+    "Stakeholder Communication", "Client Interaction",
+
+    "Technical Documentation", "API Documentation",
+    "Diagramming (UML)", "Design Documents",
+
+    "Debugging", "Performance Tuning", "Code Review",
+
+    "Agile Methodologies", "Scrum", "Kanban", "Jira",
+
+    "Project Management", "Risk Analysis",
+    "Requirements Gathering", "User Stories",
+
+    "UI/UX Principle Awareness", "Wireframing", "Prototyping",
+    "Design Tools (Figma, Sketch)", "Usability Testing",
+
+    "Mathematical Skills", "Analysis", "Model Validation",
+    "Data Structures", "Algorithms", "Graph Theory",
+
+    "Business Acumen", "Commercial Awareness",
+    "Stakeholder Expectations", "Business Communication",
+
+    "Technical Support", "Issue Triage", "Bug Reporting",
+    "Remote Assistance", "On-Site Support",
+
+    "Software Deployment", "Release Management",
+    "Change Control Processes",
+
+    "Quality Assurance", "Code Quality Tools",
+    "Static Analysis (SonarQube)", "Code Coverage Tools",
+
+    "Performance Analysis", "Scalable Architecture",
+    "High Availability", "Fault Tolerance"
+]
