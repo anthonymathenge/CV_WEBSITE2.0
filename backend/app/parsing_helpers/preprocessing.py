@@ -2,7 +2,7 @@
 import json
 import re
 import nltk
-from app.config.models import nlp, model, rake
+from config.models import nlp, model, rake
 
 
 # Download stopwords if not already
@@ -13,11 +13,11 @@ from nltk.corpus import stopwords
 stop_words = set(stopwords.words("english")).union(nlp.Defaults.stop_words)
 
 # Degree normalization dictionary
-with open("degree_map.json", "r", encoding="utf-8") as f:
+with open("config/degree_map.json", "r", encoding="utf-8") as f:
     degree_map = json.load(f)
 
 # Load skills_map from JSON
-with open("skills_map.json", "r", encoding="utf-8") as f:
+with open("config/skills_map.json", "r", encoding="utf-8") as f:
     skills_map = json.load(f)
 
 def normalize_degrees(text):

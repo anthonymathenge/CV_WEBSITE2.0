@@ -3,7 +3,7 @@ import json
 nlp = spacy.load("en_core_web_trf")
 from spacy.matcher import PhraseMatcher
 
-with open("skill_list.json", "r") as f:
+with open("config/skill_list.json", "r") as f:
     skills_list = json.load(f)# Expand as needed
 
 def spacy_extract_resume(text):

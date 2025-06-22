@@ -1,16 +1,18 @@
-import os
+import json
 import pdfplumber
 import docx
 import io
 import numpy as np
 import nltk
-from app.config.models import nlp, model, rake
+from config.models import nlp, model, rake
 from parsing_helpers.preprocessing import preprocess_text
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.tokenize import word_tokenize
 from parsing_helpers.gpt_extraction import extract_resume_info, extract_job_description_info
 from parsing_helpers.spacy_extraction import spacy_extract_resume,skill_matcher
+from parsing_helpers.normalization import normalize_skill_set
+
 nltk.download('punkt')
 
 model = SentenceTransformer('all-MiniLM-L6-v2') 
@@ -20,7 +22,7 @@ for resource in ['stopwords', 'punkt']:
         nltk.data.find(f'corpora/{resource}' if resource == 'stopwords' else f'tokenizers/{resource}')
     except LookupError:
         nltk.download(resource)
-# Load the model once
+
 
 def extract_text_from_pdf(file_bytes):
     with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
@@ -92,7 +94,7 @@ def semantic_skill_matcher(job_skills, resume_skills, threshold=0.75):
             score = cosine_similarity([job_embedding], [resume_embedding])[0][0]
 
             if score >= threshold:
-                matched_skills.add(job_skill)
+                matched_skills.add(resume_skill)
                 break  # once matched, stop comparing this job skill
 
     missing_skills = job_skills - matched_skills
@@ -103,6 +105,13 @@ def get_embedding(text):
     if len(text) > 32000:
         text = text[:32000]
     return model.encode(text)
+
+def extract_skill_names(skills):
+    return set(
+        skill["name"] if isinstance(skill, dict) else skill
+        for skill in skills
+        if isinstance(skill, (str, dict))
+    )
 
 def match_resume_to_job(parsed_resume, parsed_job):
     try:
@@ -115,8 +124,8 @@ def match_resume_to_job(parsed_resume, parsed_job):
         resume_data = extract_resume_info(parsed_resume)
         job_data = extract_job_description_info(parsed_job)
 
-        resume_skills = set(resume_data["skills"])
-        job_skills = set(job_data["required_skills"])
+        resume_skills = extract_skill_names(resume_data["skills"])
+        job_skills = extract_skill_names(job_data["required_skills"])
 
         resume_experience = set(resume_data["experience"])
         job_experience = set(job_data["required_experience"])
@@ -129,8 +138,10 @@ def match_resume_to_job(parsed_resume, parsed_job):
 
         final_resume_skills = resume_skills.union(spacy_skills)
 
+        normalized_resume_skills = normalize_skill_set(final_resume_skills)
+        normalized_job_skills = normalize_skill_set(job_skills)
 
-        matched_skills, missing_skills = semantic_skill_matcher(job_skills, final_resume_skills)
+        matched_skills, missing_skills = semantic_skill_matcher(normalized_job_skills, normalized_resume_skills)
         missing_experience = job_experience - resume_experience
         missing_education = job_education - resume_education
 

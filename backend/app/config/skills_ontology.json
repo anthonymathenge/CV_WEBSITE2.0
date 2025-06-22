@@ -1,0 +1,115 @@
+{
+  "Python": [
+    "Python programming",
+    "experience with Python",
+    "basic knowledge of Python",
+    "proficient in Python",
+    "Python developer",
+    "Python scripting"
+  ],
+  "Java": [
+    "Java programming",
+    "experience with Java",
+    "fundamental understanding of Java",
+    "proficient in Java",
+    "Java developer",
+    "Java SE/EE"
+  ],
+  "C++": [
+    "C++ programming",
+    "experience with C++",
+    "C plus plus",
+    "C++ development",
+    "C++ software engineer",
+    "proficient in C++"
+  ],
+  "JavaScript": [
+    "JavaScript programming",
+    "experience with JavaScript",
+    "JS developer",
+    "knowledge of JS",
+    "ES6/ES7",
+    "Vanilla JavaScript"
+  ],
+  "TypeScript": [
+    "TypeScript developer",
+    "experience with TypeScript",
+    "TS programming",
+    "TypeScript knowledge",
+    "typed JavaScript"
+  ],
+  "C#": [
+    "C# programming",
+    "C Sharp",
+    "experience with C#",
+    "proficient in C#",
+    ".NET developer",
+    "C# software engineer"
+  ],
+  "Ruby": [
+    "Ruby programming",
+    "Ruby on Rails",
+    "experience with Ruby",
+    "proficient in Ruby",
+    "RoR developer"
+  ],
+  "Go": [
+    "Golang",
+    "Go programming",
+    "experience with Go",
+    "Go developer",
+    "knowledge of Golang"
+  ],
+  "Rust": [
+    "Rust programming",
+    "experience with Rust",
+    "Rust developer",
+    "systems programming with Rust"
+  ],
+  "PHP": [
+    "PHP programming",
+    "experience with PHP",
+    "proficient in PHP",
+    "Laravel developer",
+    "PHP web development"
+  ],
+  "Kotlin": [
+    "Kotlin programming",
+    "Android with Kotlin",
+    "Kotlin developer",
+    "experience with Kotlin"
+  ],
+  "Swift": [
+    "Swift programming",
+    "iOS development with Swift",
+    "Swift developer",
+    "experience with Swift",
+    "SwiftUI"
+  ],
+  "SQL": [
+    "SQL queries",
+    "proficient in SQL",
+    "experience with SQL databases",
+    "MySQL/PostgreSQL",
+    "relational database skills"
+  ],
+  "R": [
+    "R programming",
+    "data analysis with R",
+    "experience with R",
+    "statistical computing with R"
+  ],
+  "MATLAB": [
+    "MATLAB programming",
+    "numerical computing with MATLAB",
+    "experience with MATLAB",
+    "proficient in MATLAB"
+  ],
+  "Shell": [
+    "Shell scripting",
+    "Bash",
+    "Linux shell",
+    "command-line scripting",
+    "experience with Shell"
+  ]
+}
