@@ -13,11 +13,10 @@ def extract_resume_info(resume_text):
 
     When extracting, apply the following logic:
 
-    - Extract skills even if they are implied or indirectly stated. Use your reasoning to infer both technical and soft skills.
-    - Include programming languages, frameworks, libraries, tools, platforms, cloud providers, as well as soft skills such as teamwork, problem-solving, and leadership.
+    - Extract skills only if they are clearly and explicitly mentioned in the resume.
+    - Include technical skills such as programming languages, tools, frameworks, cloud platforms, libraries as well as soft skills such as communication, leadership, problem-solving.
     - If certifications are present, include them under skills.
-    - Normalize and unify degree names: for example, "Computer Science", "Software Engineering", "Information Technology", and "STEM fields" should all map under "degree in computer science".
-    - If the person has exposure to specialized tools like CAD, simulation software, or laboratory instruments, infer related technical skills.
+    - If the person has exposure to specialized tools like CAD, simulation software, or laboratory instruments, include that in technical skills.
     - Include both current and previous job experience, including job title, employer name, and duration if available.
 
     Output strictly valid JSON in the following format:
@@ -58,7 +57,6 @@ def extract_job_description_info(job_text):
     - Extract both explicitly stated and implied required skills.
     - Include technical skills (programming languages, tools, frameworks, cloud platforms, libraries) as well as soft skills (communication, leadership, problem-solving).
     - Include certifications or licenses if mentioned.
-    - Normalize equivalent degree fields: for example, "Computer Science", "Software Engineering", "Information Technology", or "related STEM fields" should all map to "degree in computer science".
     - Infer missing details where possible (e.g. "object-oriented programming" → infer languages like Java, C++, Python).
     - Normalize phrasing for consistent matching.
 

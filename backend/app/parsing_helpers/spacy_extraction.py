@@ -1,3 +1,4 @@
+import re
 import spacy
 import json 
 nlp = spacy.load("en_core_web_trf")
@@ -5,6 +6,7 @@ from spacy.matcher import PhraseMatcher
 
 with open("config/skill_list.json", "r") as f:
     skills_list = json.load(f)# Expand as needed
+
 
 def spacy_extract_resume(text):
     doc = nlp(text)
@@ -31,12 +33,10 @@ def spacy_extract_resume(text):
     return extracted
 
 
-def skill_matcher(text):
-    matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
-    patterns = [nlp.make_doc(skill) for skill in skills_list]
-    matcher.add("SKILL", patterns)
-    doc = nlp(text)
-
-    matches = matcher(doc)
-    found_skills = set([doc[start:end].text for match_id, start, end in matches])
-    return found_skills
+def spacy_skill_finder(text):
+    skills = []
+    for skill in skills_list:
+        pattern = r"\b{}\b".format(re.escape(skill))
+        if re.search(pattern, text, re.IGNORECASE):
+            skills.append(skill)
+    return skills

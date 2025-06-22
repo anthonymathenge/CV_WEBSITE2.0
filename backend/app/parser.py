@@ -10,12 +10,10 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.tokenize import word_tokenize
 from parsing_helpers.gpt_extraction import extract_resume_info, extract_job_description_info
-from parsing_helpers.spacy_extraction import spacy_extract_resume,skill_matcher
+from parsing_helpers.spacy_extraction import spacy_extract_resume,spacy_skill_finder
 from parsing_helpers.normalization import normalize_skill_set
 
 nltk.download('punkt')
-
-model = SentenceTransformer('all-MiniLM-L6-v2') 
 
 for resource in ['stopwords', 'punkt']:
     try:
@@ -115,12 +113,17 @@ def extract_skill_names(skills):
 
 def match_resume_to_job(parsed_resume, parsed_job):
     try:
-        resume_embedding = get_embedding(parsed_resume)
-        job_embedding = get_embedding(parsed_job)
+        processed_parsed_resume=preprocess_text(parsed_resume)
+        processed_parsed_job=preprocess_text(parsed_job)
+
+        resume_embedding = get_embedding(processed_parsed_resume)
+        job_embedding = get_embedding(processed_parsed_job)
         similarity = cosine_similarity([resume_embedding], [job_embedding])[0][0]
 
         # --- Keyword Extraction ---
         # Combine or choose extraction method
+        print("\n📄 Sending resume to GPT:\n", parsed_resume[:2000])  # only print first 2k chars
+
         resume_data = extract_resume_info(parsed_resume)
         job_data = extract_job_description_info(parsed_job)
 
@@ -133,17 +136,24 @@ def match_resume_to_job(parsed_resume, parsed_job):
         resume_education = set(resume_data["education"])
         job_education = set(job_data["required_education"])
 
-        spacy_result = spacy_extract_resume(parsed_resume)
-        spacy_skills = skill_matcher(parsed_job)
+        spacy_result = spacy_extract_resume(processed_parsed_resume)
+        spacy_resume_skills = spacy_skill_finder(processed_parsed_resume)
+        spacy_job_skills = spacy_skill_finder(processed_parsed_job)
 
-        final_resume_skills = resume_skills.union(spacy_skills)
+        norm_spacy_resume_skills = normalize_skill_set(spacy_resume_skills)
+        norm_spacy_job_skills = normalize_skill_set(spacy_job_skills)
 
-        normalized_resume_skills = normalize_skill_set(final_resume_skills)
-        normalized_job_skills = normalize_skill_set(job_skills)
+        final_resume_skills = resume_skills.union(norm_spacy_resume_skills)
+        final_job_skills = job_skills.union(norm_spacy_job_skills)
 
-        matched_skills, missing_skills = semantic_skill_matcher(normalized_job_skills, normalized_resume_skills)
+
+        matched_skills, missing_skills = semantic_skill_matcher(final_job_skills, final_resume_skills)
         missing_experience = job_experience - resume_experience
         missing_education = job_education - resume_education
+        print("\n\n🟡 spacy_resume_skills:\n", spacy_resume_skills) 
+        print("\n\n🟡 spacy_job_skills:\n", spacy_job_skills) 
+        print("\n\n🟡 norm_spacy_resume_skills:\n", norm_spacy_resume_skills) 
+        print("\n\n🟡 norm_spacy_job_skills:\n", norm_spacy_job_skills) 
 
 
         return round(float(similarity) * 100, 2), missing_skills, missing_experience, missing_education, matched_skills
