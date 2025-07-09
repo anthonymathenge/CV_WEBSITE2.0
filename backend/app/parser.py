@@ -122,13 +122,12 @@ def match_resume_to_job(parsed_resume, parsed_job):
 
         # --- Keyword Extraction ---
         # Combine or choose extraction method
-        print("\n📄 Sending resume to GPT:\n", parsed_resume[:2000])  # only print first 2k chars
 
         resume_data = extract_resume_info(parsed_resume)
         job_data = extract_job_description_info(parsed_job)
 
-        resume_skills = extract_skill_names(resume_data["skills"])
-        job_skills = extract_skill_names(job_data["required_skills"])
+       # resume_skills = extract_skill_names(resume_data["skills"])
+        #job_skills = extract_skill_names(job_data["required_skills"])
 
         resume_experience = set(resume_data["experience"])
         job_experience = set(job_data["required_experience"])
@@ -143,11 +142,11 @@ def match_resume_to_job(parsed_resume, parsed_job):
         norm_spacy_resume_skills = normalize_skill_set(spacy_resume_skills)
         norm_spacy_job_skills = normalize_skill_set(spacy_job_skills)
 
-        final_resume_skills = resume_skills.union(norm_spacy_resume_skills)
-        final_job_skills = job_skills.union(norm_spacy_job_skills)
+        #final_resume_skills = resume_skills.union(norm_spacy_resume_skills)
+        #final_job_skills = job_skills.union(norm_spacy_job_skills)
 
 
-        matched_skills, missing_skills = semantic_skill_matcher(final_job_skills, final_resume_skills)
+        matched_skills, missing_skills = semantic_skill_matcher(norm_spacy_job_skills, norm_spacy_resume_skills)
         missing_experience = job_experience - resume_experience
         missing_education = job_education - resume_education
         print("\n\n🟡 spacy_resume_skills:\n", spacy_resume_skills) 
@@ -155,7 +154,49 @@ def match_resume_to_job(parsed_resume, parsed_job):
         print("\n\n🟡 norm_spacy_resume_skills:\n", norm_spacy_resume_skills) 
         print("\n\n🟡 norm_spacy_job_skills:\n", norm_spacy_job_skills) 
 
-
-        return round(float(similarity) * 100, 2), missing_skills, missing_experience, missing_education, matched_skills
+       
+        return round(float(similarity) * 100, 2), missing_skills, missing_experience, missing_education, matched_skills, resume_data, job_data
     except Exception as e:
         raise RuntimeError(f"Embedding match failed: {str(e)}")
+
+def format_match_results(matched, title="Matched Skills"):
+    lines = [f"🟢 {title}"]
+    for group in matched:
+        cat = group.get("category", "General")
+        items = group.get("items", [])
+        reason = group.get("justification", "")
+        lines.append(f"\n{cat}")
+        for item in items:
+            lines.append(f"• {item}")
+        if reason:
+            lines.append(f"\n{reason}")
+    return "\n".join(lines)
+
+def format_missing_results(missing, title="Missing Skills"):
+    lines = [f"\n{title}"]
+    for group in missing:
+        cat = group.get("category", "General")
+        items = group.get("items", [])
+        description = group.get("description", "")
+        lines.append(f"\n{cat}")
+        for item in items:
+            lines.append(f"• {item}")
+        if description:
+            lines.append(f"\n{description}")
+    return "\n".join(lines)
+
+def format_missing_experience(experience_set):
+    if not experience_set:
+        return ""
+    lines = ["\nMissing Experience\n"]
+    for exp in sorted(experience_set):
+        lines.append(f"• {exp}")
+    return "\n".join(lines)
+
+def format_missing_education(education_set):
+    if not education_set:
+        return ""
+    lines = ["\nMissing Education\n"]
+    for edu in sorted(education_set):
+        lines.append(f"• {edu}")
+    return "\n".join(lines)

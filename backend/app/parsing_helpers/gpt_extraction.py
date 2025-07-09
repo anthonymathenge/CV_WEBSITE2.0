@@ -3,8 +3,9 @@ import re
 import openai
 import os
 import json
+from openai import OpenAI
 
-#openai.api_key = 
+#client = OpenAI(api_key = )
 MODEL = "gpt-4o"  
 # Resume extractor
 def extract_resume_info(resume_text):
@@ -19,21 +20,31 @@ def extract_resume_info(resume_text):
     - If the person has exposure to specialized tools like CAD, simulation software, or laboratory instruments, include that in technical skills.
     - Include both current and previous job experience, including job title, employer name, and duration if available.
 
-    Output strictly valid JSON in the following format:
+    Output strictly valid JSON in this enhanced format:
 
     {
     "name": "",
     "email": "",
     "phone": "",
-    "skills": ["Skill A", "Skill B", ...],
-    "education": ["education A", "education B", ...],
-    "experience": ["experience A", "experience B", ...]
+    "skills": [
+        {
+        "category": "Technical & Software Skills",
+        "items": ["Java", "Unix", "SQL"],
+        },
+        {
+        "category": "Communication & Collaboration",
+        "items": ["Mentoring", "Team Leadership"],
+        }
+    ],
+    "education": ["BSc in Computer Science"],
+    "experience": ["Technical Support Intern at ABC Ltd (2022-2023)"]
     }
+
     """
 
     user_prompt = f"Resume Text:\n\"\"\"\n{resume_text}\n\"\"\""
 
-    response = openai.chat.completions.create(
+    response = client.chat.completions.create(
         model=MODEL,
         messages=[
             {"role": "system", "content": system_prompt},
@@ -43,8 +54,7 @@ def extract_resume_info(resume_text):
     )
 
     output_text = response.choices[0].message.content.strip()
-    extracted_data = safe_json_load(output_text)
-    return extracted_data
+    return safe_json_load(output_text)
 
 
 # Job Description extractor
@@ -63,15 +73,24 @@ def extract_job_description_info(job_text):
     Output strictly valid JSON in the following format:
 
     {
-    "required_skills": [],
-    "required_experience": [],
-    "required_education": []
+    "required_skills": [
+        {
+        "category": "Customer Support Tools",
+        "items": ["ticketing systems", "live chat"],
+        },
+        {
+        "category": "Testing and QA",
+        "items": ["bug reporting", "feature testing"],
+        }
+    ],
+    "required_experience": ["1+ year in technical support roles"],
+    "required_education": ["Degree in Computer Science or related field"]
     }
     """
 
     user_prompt = f"Job Description Text:\n\"\"\"\n{job_text}\n\"\"\""
 
-    response = openai.chat.completions.create(
+    response = client.chat.completions.create(
         model=MODEL,
         messages=[
             {"role": "system", "content": system_prompt},
@@ -81,9 +100,8 @@ def extract_job_description_info(job_text):
     )
 
     output_text = response.choices[0].message.content.strip()
-    extracted_data = safe_json_load(output_text)
-    return extracted_data
-
+    return safe_json_load(output_text)
+ 
 def safe_json_load(gpt_response):
     # Remove Markdown-style code fences
     gpt_response = re.sub(r"```(json)?", "", gpt_response, flags=re.IGNORECASE).strip()
